@@ -1,5 +1,10 @@
 package mazes
 
+import java.awt.*
+import java.awt.image.BufferedImage
+
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB
+
 class Grid {
 
     final int rows, cols
@@ -54,6 +59,8 @@ class Grid {
         cells.each(closure)
     }
 
+    // FIXME: the renderers should be external formatters
+
     String toString() {
         def output = new StringBuilder('+' + '---+' * cols + '\n')
 
@@ -76,5 +83,39 @@ class Grid {
         }
 
         output
+    }
+
+    BufferedImage toImage(int cellSize = 10) {
+        int imgW = cellSize * cols + 1
+        int imgH = cellSize * rows + 1
+
+        def background = Color.WHITE
+        def wall = Color.BLACK
+
+        BufferedImage bufferedImage = new BufferedImage(imgW, imgH, TYPE_INT_ARGB)
+        def gfx = bufferedImage.createGraphics()
+
+        // fill background
+        gfx.setColor(background)
+        gfx.fillRect(0, 0, imgW, imgH)
+
+        gfx.setColor(wall)
+
+        eachCell { cell ->
+            int x1 = cell.col * cellSize
+            int y1 = cell.row * cellSize
+            int x2 = (cell.col + 1) * cellSize
+            int y2 = (cell.row + 1) * cellSize
+
+            if (!cell.north) gfx.drawLine(x1, y1, x2, y1)
+
+            if (!cell.west) gfx.drawLine(x1, y1, x1, y2)
+
+            if (!cell.linked(cell.east)) gfx.drawLine(x2, y1, x2, y2)
+
+            if (!cell.linked(cell.south)) gfx.drawLine(x1, y2, x2, y2)
+        }
+
+        bufferedImage
     }
 }

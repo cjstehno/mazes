@@ -1,5 +1,7 @@
 package mazes
 
+import javax.imageio.ImageIO
+
 import static mazes.Utils.pick
 
 class BinaryTree {
@@ -18,7 +20,9 @@ class BinaryTree {
     }
 
     static void main(args) {
-        println BinaryTree.on(new Grid(10,10))
+        def maze = BinaryTree.on(new Grid(10,10))
+        def image = maze.toImage()
+        ImageIO.write(image, 'png', new File('/home/cjstehno/Desktop/maze.png'))
     }
 }
 
