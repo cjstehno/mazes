@@ -10,4 +10,8 @@ class Utils {
     static <T> T pick(List<T> list) {
         list ? list[rand.nextInt(list.size())] : null
     }
+
+    static boolean randBool(){
+        rand.nextBoolean()
+    }
 }

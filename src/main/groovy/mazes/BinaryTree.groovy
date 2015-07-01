@@ -18,7 +18,7 @@ class BinaryTree {
     }
 
     static void main(args) {
-        println BinaryTree.on(new Grid(6, 7))
+        println BinaryTree.on(new Grid(10,10))
     }
 }
 
