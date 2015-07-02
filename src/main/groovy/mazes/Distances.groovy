@@ -2,12 +2,9 @@ package mazes
 
 class Distances {
 
-    private final Cell root
     private final cells = [:]
 
     Distances(Cell root){
-        this.root = root
-
         cells[root] = 0
     }
 
