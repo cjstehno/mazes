@@ -44,4 +44,26 @@ class Cell {
         if (west) list << west
         list
     }
+
+    def distances(){
+        def distances = new Distances(this)
+        def frontier = [this]
+
+        while (frontier){
+            def newFrontier = []
+
+            frontier.each { cell->
+                cell.links().each { linked->
+                    if(!distances[linked]){
+                        distances[linked] = distances[cell] + 1
+                        newFrontier << linked
+                    }
+                }
+            }
+
+            frontier = newFrontier
+        }
+
+        distances
+    }
 }

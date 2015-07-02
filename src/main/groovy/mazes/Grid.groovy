@@ -9,7 +9,7 @@ class Grid {
 
     final int rows, cols
 
-    private final cells = []
+    protected final cells = []
 
     Grid(int rows, int cols) {
         this.rows = rows
@@ -59,8 +59,6 @@ class Grid {
         cells.each(closure)
     }
 
-    // FIXME: the renderers should be external formatters
-
     String toString() {
         def output = new StringBuilder('+' + '---+' * cols + '\n')
 
@@ -72,7 +70,7 @@ class Grid {
                 if (!c) c = new Cell(-1, -1)
 
                 def eastBound = (c.linked(c.east) ? ' ' : '|')
-                top.append('   ').append(eastBound)
+                top.append(" ${contentsOf(c)} ").append(eastBound)
 
                 def southBound = (c.linked(c.south) ? '   ' : '---')
                 bottom.append(southBound).append('+')
@@ -83,6 +81,10 @@ class Grid {
         }
 
         output
+    }
+
+    protected String contentsOf(Cell cell){
+        ' '
     }
 
     BufferedImage toImage(int cellSize = 10) {
