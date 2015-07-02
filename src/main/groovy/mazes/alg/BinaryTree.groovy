@@ -1,12 +1,13 @@
-package mazes
+package mazes.alg
 
-import javax.imageio.ImageIO
+import mazes.CliHelper
+import mazes.Grid
 
 import static mazes.Utils.pick
 
 class BinaryTree {
 
-    static Grid on(Grid grid) {
+    static algorithm = {Grid grid->
         grid.eachCell { cell ->
             def neighbors = []
             if (cell.north) neighbors << cell.north
@@ -19,10 +20,8 @@ class BinaryTree {
         grid
     }
 
-    static void main(args) {
-        def maze = BinaryTree.on(new Grid(10,10))
-        def image = maze.toImage()
-        ImageIO.write(image, 'png', new File('/home/cjstehno/Desktop/maze.png'))
+    static void main(args){
+        CliHelper.generate(args, algorithm)
     }
 }
 

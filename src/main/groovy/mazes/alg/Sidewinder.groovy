@@ -1,15 +1,18 @@
-package mazes
+package mazes.alg
+
+import mazes.CliHelper
+import mazes.Grid
 
 import static mazes.Utils.pick
 import static mazes.Utils.randBool
 
 class Sidewinder {
 
-    static Grid on(Grid grid){
-        grid.eachRow { row->
+    static algorithm = { Grid grid ->
+        grid.eachRow { row ->
             def run = []
 
-            row.each { cell->
+            row.each { cell ->
                 run << cell
 
                 boolean atEastBounds = !cell.east
@@ -17,9 +20,9 @@ class Sidewinder {
 
                 boolean shouldCloseOut = atEastBounds || (!atNorthBounds && randBool())
 
-                if( shouldCloseOut){
+                if (shouldCloseOut) {
                     def member = pick(run)
-                    if(member.north) member.link(member.north)
+                    if (member.north) member.link(member.north)
 
                     run.clear()
 
@@ -32,7 +35,8 @@ class Sidewinder {
         grid
     }
 
-    static void main(args){
-        println Sidewinder.on(new Grid(10,10))
+    static void main(args) {
+        CliHelper.generate(args, algorithm)
     }
 }
+
