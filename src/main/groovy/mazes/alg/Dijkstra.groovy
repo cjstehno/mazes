@@ -12,5 +12,11 @@ class Dijkstra {
         BinaryTree.algorithm(grid)
         grid.calculateDistances()
         println grid
+
+        println 'Path from NW corner to SW corner'
+
+        grid.distances = grid.distances.pathTo(grid.cellAt(grid.rows -1, 0))
+
+        println grid
     }
 }
