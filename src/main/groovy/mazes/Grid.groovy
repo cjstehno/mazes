@@ -4,6 +4,7 @@ import java.awt.*
 import java.awt.image.BufferedImage
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB
+import static mazes.Utils.pick
 
 class Grid {
 
@@ -37,6 +38,10 @@ class Grid {
             cell.west = cellAt(row, col - 1)
             cell.east = cellAt(row, col + 1)
         }
+    }
+
+    Cell randomCell(){
+        pick(cells)
     }
 
     Cell cellAt(int row, int col) {
