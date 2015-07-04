@@ -83,7 +83,7 @@ class Grid {
         output
     }
 
-    protected String contentsOf(Cell cell){
+    protected String contentsOf(Cell cell) {
         ' '
     }
 
@@ -98,26 +98,37 @@ class Grid {
         def gfx = bufferedImage.createGraphics()
 
         // fill background
-        gfx.setColor(background)
+        gfx.color = background
         gfx.fillRect(0, 0, imgW, imgH)
 
-        gfx.setColor(wall)
+        gfx.color = wall
 
-        eachCell { cell ->
-            int x1 = cell.col * cellSize
-            int y1 = cell.row * cellSize
-            int x2 = (cell.col + 1) * cellSize
-            int y2 = (cell.row + 1) * cellSize
+        ['backgrounds','walls'].each { mode->
+            eachCell { cell ->
+                int x1 = cell.col * cellSize
+                int y1 = cell.row * cellSize
+                int x2 = (cell.col + 1) * cellSize
+                int y2 = (cell.row + 1) * cellSize
 
-            if (!cell.north) gfx.drawLine(x1, y1, x2, y1)
+                if (mode == 'backgrounds') {
+                    gfx.color = cellBackgroundColor(cell)
+                    gfx.fillRect(x1, y1, x2, y2)
 
-            if (!cell.west) gfx.drawLine(x1, y1, x1, y2)
+                } else {
+                    gfx.color = wall
 
-            if (!cell.linked(cell.east)) gfx.drawLine(x2, y1, x2, y2)
-
-            if (!cell.linked(cell.south)) gfx.drawLine(x1, y2, x2, y2)
+                    if (!cell.north) gfx.drawLine(x1, y1, x2, y1)
+                    if (!cell.west) gfx.drawLine(x1, y1, x1, y2)
+                    if (!cell.linked(cell.east)) gfx.drawLine(x2, y1, x2, y2)
+                    if (!cell.linked(cell.south)) gfx.drawLine(x1, y2, x2, y2)
+                }
+            }
         }
 
         bufferedImage
+    }
+
+    protected Color cellBackgroundColor(Cell cell) {
+        Color.WHITE
     }
 }

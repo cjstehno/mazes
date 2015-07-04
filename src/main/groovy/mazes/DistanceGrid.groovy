@@ -5,7 +5,7 @@ package mazes
  */
 class DistanceGrid extends Grid {
 
-    private Distances distances
+    protected Distances distances
 
     DistanceGrid(int rows, int cols) {
         super(rows, cols)
