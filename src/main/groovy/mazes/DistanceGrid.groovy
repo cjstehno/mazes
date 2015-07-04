@@ -20,8 +20,8 @@ class DistanceGrid extends Grid {
         }
     }
 
-    void calculateDistances(){
-        def root = cellAt(0,0)
+    void calculateDistances(Cell from=null){
+        def root = from ?: cellAt(0,0)
         distances = new Distances(root)
         def frontier = [root]
 

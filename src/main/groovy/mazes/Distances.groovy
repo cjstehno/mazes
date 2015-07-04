@@ -40,4 +40,18 @@ class Distances {
 
         breadcrumbs
     }
+
+    def max(){
+        int maxDistance = 0
+        Cell maxCell = root
+
+        cells.each { cell, dist->
+            if( dist > maxDistance ){
+                maxCell = cell
+                maxDistance = dist
+            }
+        }
+
+        [maxCell, maxDistance]
+    }
 }
