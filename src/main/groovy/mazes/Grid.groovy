@@ -40,6 +40,10 @@ class Grid {
         }
     }
 
+    def deadends(){
+        cells.findAll { cell-> cell.links().size() == 1 }
+    }
+
     Cell randomCell(){
         pick(cells)
     }

@@ -25,6 +25,8 @@ class CliHelper {
             } else {
                 println maze
             }
+
+            println "Deadends: ${maze.deadends().size()}"
         }
     }
 }
