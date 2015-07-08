@@ -11,6 +11,10 @@ class Utils {
         list ? list[rand.nextInt(list.size())] : null
     }
 
+    static int randInt(int max){
+        rand.nextInt(max)
+    }
+
     static boolean randBool(){
         rand.nextBoolean()
     }
