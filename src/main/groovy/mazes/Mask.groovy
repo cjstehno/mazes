@@ -1,8 +1,12 @@
 package mazes
 
+import javax.imageio.ImageIO
+import java.awt.*
+import java.awt.image.BufferedImage
+
 class Mask {
 
-    final int rows, cols
+    private int rows, cols
     private bits
 
     Mask(final int rows, final int cols) {
@@ -10,6 +14,29 @@ class Mask {
         this.cols = cols
 
         populateBits(rows, cols)
+    }
+
+    Mask(File file) {
+        if (file.name.toLowerCase().endsWith('.txt')) {
+            loadTextMask(file)
+
+        } else {
+            loadImageMask(file)
+        }
+    }
+
+    private void loadImageMask(File file) {
+        BufferedImage image = ImageIO.read(file)
+
+        this.rows = image.height
+        this.cols = image.width
+        populateBits()
+
+        rows.times { r ->
+            cols.times { c ->
+                setAt(r, c, image.getRGB(c, r) != Color.BLACK.getRGB())
+            }
+        }
     }
 
     private void populateBits() {
@@ -25,18 +52,26 @@ class Mask {
         this.bits = list
     }
 
-    Mask(File file){
+    private void loadTextMask(File file) {
         def lines = file.readLines()
 
         this.rows = lines.size()
         this.cols = lines[0].trim().length()
         populateBits()
 
-        lines.eachWithIndex { String line, int r->
-            line.trim().eachWithIndex{ value, int c->
+        lines.eachWithIndex { String line, int r ->
+            line.trim().eachWithIndex { value, int c ->
                 setAt(r, c, value != 'X')
             }
         }
+    }
+
+    int getRows() {
+        return rows
+    }
+
+    int getCols() {
+        return cols
     }
 
     boolean getAt(int row, int col) {
