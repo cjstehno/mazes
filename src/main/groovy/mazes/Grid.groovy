@@ -1,40 +1,43 @@
 package mazes
-import java.awt.*
+
+import java.awt.Color
 import java.awt.image.BufferedImage
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB
+import static mazes.Utils.randInt
 
 class Grid {
 
-    protected final cells = []
-    private Mask mask
+    final int rows, cols
 
-    Grid(int rows, int cols) {
-        this(new Mask(rows, cols))
+    private grid
+
+    Grid(final int rows, final int cols, boolean initialize=true) {
+        this.rows = rows
+        this.cols = cols
+        if(initialize) init()
     }
 
-    Grid(Mask mask) {
-        this.mask = mask
-
-        prepareGrid()
+    protected void init(){
+        this.grid = prepareGrid()
         configureCells()
     }
 
-    protected void prepareGrid() {
-        mask.rows.times { r ->
-            mask.cols.times { c ->
-                if (mask.getAt(r, c)) {
-                    cells << new Cell(r, c)
-                } else {
-                    cells << null
-                }
+    protected prepareGrid() {
+        def list = []
+        rows.times { r ->
+            def columns = []
+            cols.times { c ->
+                columns << new Cell(r, c)
             }
+            list << columns
         }
+        list
     }
 
-    private void configureCells() {
+    protected void configureCells() {
         eachCell { cell ->
-            if( cell ){
+            if (cell) {
                 int row = cell.row
                 int col = cell.col
 
@@ -46,37 +49,42 @@ class Grid {
         }
     }
 
-    def deadends() {
-        cells.findAll { cell -> cell.links().size() == 1 }
-    }
-
-    Cell randomCell() {
-        def (row, col) = mask.randomLocation()
-        cellAt(row, col)
-    }
-
     Cell cellAt(int row, int col) {
-        if (row < 0 || row >= mask.rows || col < 0 || col >= mask.cols) return null
-
-        cells[row * mask.cols + col]
-    }
-
-    int size() {
-        mask.count()
-    }
-
-    void eachRow(Closure closure) {
-        mask.rows.times { r ->
-            closure(cells[(r * mask.cols)..(r * mask.cols + mask.cols - 1)])
+        if ((0..<rows).containsWithinBounds(row) && (0..<cols).containsWithinBounds(col)) {
+            grid[row][col]
+        } else {
+            null
         }
     }
 
+    Cell randomCell() {
+        cellAt(randInt(rows), randInt(cols))
+    }
+
+    int size() {
+        rows * cols
+    }
+
+    void eachRow(Closure closure) {
+        grid.each(closure)
+    }
+
     void eachCell(Closure closure) {
-        cells.each(closure)
+        eachRow { row ->
+            row.each(closure)
+        }
+    }
+
+    List<Cell> cells(){
+        grid.flatten()
+    }
+
+    def deadends(){
+        cells().findAll { cell-> cell.links().size() == 1 }
     }
 
     String toString() {
-        def output = new StringBuilder('+' + '---+' * mask.cols + '\n')
+        def output = new StringBuilder('+' + '---+' * cols + '\n')
 
         eachRow { r ->
             def top = new StringBuilder('|')
@@ -99,13 +107,9 @@ class Grid {
         output
     }
 
-    protected String contentsOf(Cell cell) {
-        ' '
-    }
-
     BufferedImage toImage(int cellSize = 10) {
-        int imgW = cellSize * mask.cols + 1
-        int imgH = cellSize * mask.rows + 1
+        int imgW = cellSize * cols + 1
+        int imgH = cellSize * rows + 1
 
         def wall = Color.BLACK
 
@@ -138,8 +142,6 @@ class Grid {
                         if (!cell.linked(cell.east)) gfx.drawLine(x2, y1, x2, y2)
                         if (!cell.linked(cell.south)) gfx.drawLine(x1, y2, x2, y2)
                     }
-                } else {
-                    // masked
                 }
             }
         }
@@ -147,7 +149,11 @@ class Grid {
         bufferedImage
     }
 
-    protected Color cellBackgroundColor(Cell cell) {
+    protected Color cellBackgroundColor(Cell cell){
         Color.WHITE
+    }
+
+    protected String contentsOf(Cell cell) {
+        ' '
     }
 }

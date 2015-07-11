@@ -10,19 +10,19 @@ class Distances {
         cells[root] = 0
     }
 
-    def getAt(Cell cell) {
+    def getAt(Cell cell){
         cells[cell]
     }
 
-    def putAt(Cell cell, int distance) {
-        cells[cell] = distance
+    void putAt(Cell cell, int dist){
+        cells[cell] = dist
     }
 
-    def cells() {
+    Set<Cell> cells(){
         cells.keySet()
     }
 
-    def pathTo(Cell goal) {
+    def pathTo(Cell goal){
         def current = goal
 
         def breadcrumbs = new Distances(root)

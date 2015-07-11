@@ -1,20 +1,20 @@
 package mazes
 
-import java.awt.*
+import java.awt.Color
 
-class ColoredGrid extends DistanceGrid {
+class ColoredGrid extends Grid {
 
-    private Cell farthest
-    private int maximum
+    Distances distances
+    int maximum
 
     ColoredGrid(int rows, int cols) {
         super(rows, cols)
     }
 
-    void calculateMax(){
-        def (farthest, maximum) = distances.max()
-        this.farthest = farthest
-        this.maximum = maximum
+    void setDistances(Distances distances) {
+        this.distances = distances
+        def (farthest, max) = distances.max()
+        this.maximum = max
     }
 
     @Override

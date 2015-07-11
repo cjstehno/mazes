@@ -1,7 +1,7 @@
 package mazes
 
 import javax.imageio.ImageIO
-import java.awt.*
+import java.awt.Color
 import java.awt.image.BufferedImage
 
 class Mask {
@@ -12,57 +12,15 @@ class Mask {
     Mask(final int rows, final int cols) {
         this.rows = rows
         this.cols = cols
-
-        populateBits(rows, cols)
+        this.bits = makeBits(rows, cols)
     }
 
-    Mask(File file) {
+    Mask(final File file) {
         if (file.name.toLowerCase().endsWith('.txt')) {
             loadTextMask(file)
 
         } else {
             loadImageMask(file)
-        }
-    }
-
-    private void loadImageMask(File file) {
-        BufferedImage image = ImageIO.read(file)
-
-        this.rows = image.height
-        this.cols = image.width
-        populateBits()
-
-        rows.times { r ->
-            cols.times { c ->
-                setAt(r, c, image.getRGB(c, r) != Color.BLACK.getRGB())
-            }
-        }
-    }
-
-    private void populateBits() {
-        def list = []
-        rows.times { r ->
-            def row = []
-            cols.times { c ->
-                row << true
-            }
-            list << row
-        }
-
-        this.bits = list
-    }
-
-    private void loadTextMask(File file) {
-        def lines = file.readLines()
-
-        this.rows = lines.size()
-        this.cols = lines[0].trim().length()
-        populateBits()
-
-        lines.eachWithIndex { String line, int r ->
-            line.trim().eachWithIndex { value, int c ->
-                setAt(r, c, value != 'X')
-            }
         }
     }
 
@@ -72,6 +30,48 @@ class Mask {
 
     int getCols() {
         return cols
+    }
+
+    private void loadTextMask(File file) {
+        def lines = file.readLines()
+
+        this.rows = lines.size()
+        this.cols = lines[0].trim().length()
+        this.bits = makeBits(rows, cols)
+
+        lines.eachWithIndex { String line, int r ->
+            line.trim().eachWithIndex { value, int c ->
+                setAt(r, c, value != 'X')
+            }
+        }
+    }
+
+    private void loadImageMask(File file){
+        BufferedImage image = ImageIO.read(file)
+
+        this.rows = image.height
+        this.cols = image.width
+        this.bits = makeBits(rows, cols)
+
+        rows.times { r ->
+            cols.times { c ->
+                setAt(r, c, image.getRGB(c, r) != Color.BLACK.getRGB())
+            }
+        }
+    }
+
+    private static makeBits(int rows, int cols) {
+        def list = []
+
+        rows.times { r ->
+            def row = []
+            cols.times { c ->
+                row << true
+            }
+            list << row
+        }
+
+        list
     }
 
     boolean getAt(int row, int col) {
