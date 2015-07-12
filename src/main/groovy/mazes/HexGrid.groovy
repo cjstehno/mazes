@@ -59,7 +59,7 @@ class HexGrid extends Grid {
     }
 
     @Override
-    BufferedImage toImage(int cellSize) {
+    BufferedImage toImage(int cellSize=10) {
         def aSize = cellSize / 2.0
         def bSize = cellSize * Math.sqrt(3) / 2.0
         def width = cellSize * 2
