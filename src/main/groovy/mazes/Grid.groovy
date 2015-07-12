@@ -51,10 +51,14 @@ class Grid {
 
     Cell cellAt(int row, int col) {
         if ((0..<rows).containsWithinBounds(row) && (0..<cols).containsWithinBounds(col)) {
-            grid[row][col]
+            _grid(row,col)
         } else {
             null
         }
+    }
+
+    protected Cell _grid(int row, int col){
+        grid[row][col]
     }
 
     Cell randomCell() {
@@ -63,6 +67,10 @@ class Grid {
 
     int size() {
         rows * cols
+    }
+
+    protected rowAt(int row){
+        grid[row]
     }
 
     void eachRow(Closure closure) {
