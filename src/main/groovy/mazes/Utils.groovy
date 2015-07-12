@@ -15,4 +15,12 @@ class Utils {
     static boolean randBool() {
         rand.nextBoolean()
     }
+
+    static boolean even(Number n){
+        n % 2 == 0
+    }
+
+    static boolean odd( Number n){
+        n % 2 != 0
+    }
 }
