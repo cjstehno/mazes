@@ -12,6 +12,10 @@ class Utils {
         rand.nextInt(max)
     }
 
+    static float randFloat(){
+        rand.nextFloat()
+    }
+
     static boolean randBool() {
         rand.nextBoolean()
     }

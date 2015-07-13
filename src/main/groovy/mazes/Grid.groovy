@@ -1,10 +1,12 @@
 package mazes
 
-import java.awt.Color
+import javax.imageio.ImageIO
+import java.awt.*
 import java.awt.image.BufferedImage
+import java.util.List
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB
-import static mazes.Utils.randInt
+import static mazes.Utils.*
 
 class Grid {
 
@@ -12,13 +14,13 @@ class Grid {
 
     private grid
 
-    Grid(final int rows, final int cols, boolean initialize=true) {
+    Grid(final int rows, final int cols, boolean initialize = true) {
         this.rows = rows
         this.cols = cols
-        if(initialize) init()
+        if (initialize) init()
     }
 
-    protected void init(){
+    protected void init() {
         this.grid = prepareGrid()
         configureCells()
     }
@@ -51,13 +53,13 @@ class Grid {
 
     Cell cellAt(int row, int col) {
         if ((0..<rows).containsWithinBounds(row) && (0..<cols).containsWithinBounds(col)) {
-            _grid(row,col)
+            _grid(row, col)
         } else {
             null
         }
     }
 
-    protected Cell _grid(int row, int col){
+    protected Cell _grid(int row, int col) {
         grid[row][col]
     }
 
@@ -69,7 +71,7 @@ class Grid {
         rows * cols
     }
 
-    protected rowAt(int row){
+    protected rowAt(int row) {
         grid[row]
     }
 
@@ -83,12 +85,28 @@ class Grid {
         }
     }
 
-    List<Cell> cells(){
+    List<Cell> cells() {
         grid.flatten()
     }
 
-    def deadends(){
-        cells().findAll { cell-> cell.links().size() == 1 }
+    def deadends() {
+        cells().findAll { cell -> cell.links().size() == 1 }
+    }
+
+    def braid(float p = 1.0) {
+        def ends = deadends()
+        Collections.shuffle(ends)
+        ends.each { cell ->
+            if (cell.links().size() == 1 && randFloat() > p) {
+
+                def neighbors = cell.neighbors().findAll { n -> !cell.linked(n) }
+
+                def best = neighbors.findAll { Cell n -> n.links().size() == 1 }
+                best = best ?: neighbors
+
+                cell.link(pick(best))
+            }
+        }
     }
 
     String toString() {
@@ -132,7 +150,7 @@ class Grid {
 
         ['backgrounds', 'walls'].each { mode ->
             eachCell { cell ->
-                if( cell ){
+                if (cell) {
                     int x1 = cell.col * cellSize
                     int y1 = cell.row * cellSize
                     int x2 = (cell.col + 1) * cellSize
@@ -157,11 +175,25 @@ class Grid {
         bufferedImage
     }
 
-    protected Color cellBackgroundColor(Cell cell){
+    protected Color cellBackgroundColor(Cell cell) {
         Color.WHITE
     }
 
     protected String contentsOf(Cell cell) {
         ' '
+    }
+
+    static void main(args){
+        def grid = new Grid(25,25)
+
+        Algorithms.recursiveBacktracker(grid)
+
+        println "Deadends (before): ${grid.deadends().size()}"
+
+        grid.braid(0.5f)
+
+        println "Deadends (after): ${grid.deadends().size()}"
+
+        ImageIO.write(grid.toImage(), 'png', new File("${System.getProperty('user.home')}/maze.png"))
     }
 }
