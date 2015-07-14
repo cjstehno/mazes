@@ -70,7 +70,9 @@ class PolarGrid extends Grid {
     }
 
     @Override
-    BufferedImage toImage(int cellSize = 10) {
+    BufferedImage toImage(Map options = [:]) {
+        def (cellSize, inset) = imageOptions(options)
+
         int imgSize = 2 * rows * cellSize
 
         def center = imgSize / 2

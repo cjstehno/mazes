@@ -48,7 +48,9 @@ class TriangleGrid extends Grid {
     }
 
     @Override
-    BufferedImage toImage(int size = 16) {
+    BufferedImage toImage(Map options = [:]) {
+        def (cellSize, inset) = imageOptions(options)
+
         def halfWidth = size / 2.0
         def height = size * Math.sqrt(3) / 2.0
         def halfHeight = height / 2.0

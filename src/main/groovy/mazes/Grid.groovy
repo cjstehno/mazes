@@ -133,9 +133,13 @@ class Grid {
         output
     }
 
-    BufferedImage toImage(int cellSize = 10) {
+    // cellSize, inset
+    BufferedImage toImage(Map options = [:]) {
+        def (cellSize, inset) = imageOptions(options)
+
         int imgW = cellSize * cols + 1
         int imgH = cellSize * rows + 1
+        inset = (cellSize * inset) as int
 
         def wall = Color.BLACK
 
@@ -151,28 +155,102 @@ class Grid {
         ['backgrounds', 'walls'].each { mode ->
             eachCell { cell ->
                 if (cell) {
-                    int x1 = cell.col * cellSize
-                    int y1 = cell.row * cellSize
-                    int x2 = (cell.col + 1) * cellSize
-                    int y2 = (cell.row + 1) * cellSize
+                    int x = cell.col * cellSize
+                    int y = cell.row * cellSize
 
-                    if (mode == 'backgrounds') {
-                        gfx.color = cellBackgroundColor(cell)
-                        gfx.fillRect(x1, y1, x2, y2)
-
+                    if (inset > 0) {
+                        toImageWithInset(gfx, cell, mode, cellSize, x, y, inset)
                     } else {
-                        gfx.color = wall
-
-                        if (!cell.north) gfx.drawLine(x1, y1, x2, y1)
-                        if (!cell.west) gfx.drawLine(x1, y1, x1, y2)
-                        if (!cell.linked(cell.east)) gfx.drawLine(x2, y1, x2, y2)
-                        if (!cell.linked(cell.south)) gfx.drawLine(x1, y2, x2, y2)
+                        toImageWithoutInset(gfx, cell, mode, cellSize, x, y)
                     }
+
+
                 }
             }
         }
 
         bufferedImage
+    }
+
+    protected imageOptions(Map opts = [:]) {
+        def map = [cellSize: 10, inset: 0] + opts
+        [map.cellSize, map.inset]
+    }
+
+    private void toImageWithoutInset(Graphics2D gfx, Cell cell, String mode, int cellSize, int x, int y) {
+        int x1 = x
+        int y1 = y
+        int x2 = x1 + cellSize
+        int y2 = y1 + cellSize
+
+        if (mode == 'backgrounds') {
+            gfx.color = cellBackgroundColor(cell)
+            gfx.fillRect(x, y, x2, y2)
+
+        } else {
+            gfx.color = Color.BLACK
+
+            if (!cell.north) gfx.drawLine(x1, y1, x2, y1)
+            if (!cell.west) gfx.drawLine(x1, y1, x1, y2)
+            if (!cell.linked(cell.east)) gfx.drawLine(x2, y1, x2, y2)
+            if (!cell.linked(cell.south)) gfx.drawLine(x1, y2, x2, y2)
+        }
+    }
+
+    private void toImageWithInset(Graphics2D gfx, Cell cell, String mode, int cellSize, int x, int y, int inset) {
+        def (x1, x2, x3, x4, y1, y2, y3, y4) = cellCoordinatesWithInset(x, y, cellSize, inset)
+
+        if (mode == 'backgrounds') {
+            // ...
+        } else {
+            gfx.color = Color.BLACK
+
+            if (cell.linked(cell.north)) {
+                gfx.drawLine(x2, y1, x2, y2)
+                gfx.drawLine(x3, y1, x3, y2)
+
+            } else {
+                gfx.drawLine(x2, y2, x3, y2)
+            }
+
+            if (cell.linked(cell.south)) {
+                gfx.drawLine(x2, y3, x2, y4)
+                gfx.drawLine(x3, y3, x3, y4)
+
+            } else {
+                gfx.drawLine(x2, y3, x3, y3)
+            }
+
+            if (cell.linked(cell.west)) {
+                gfx.drawLine(x1, y2, x2, y2)
+                gfx.drawLine(x1, y3, x2, y3)
+
+            } else {
+                gfx.drawLine(x2, y2, x2, y3)
+            }
+
+            if (cell.linked(cell.east)) {
+                gfx.drawLine(x3, y2, x4, y2)
+                gfx.drawLine(x3, y3, x4, y3)
+
+            } else {
+                gfx.drawLine(x3, y2, x3, y3)
+            }
+        }
+    }
+
+    private cellCoordinatesWithInset(int x, int y, int cellSize, int inset) {
+        int x1 = x
+        int x2 = x1 + inset
+        int x4 = x + cellSize
+        int x3 = x4 - inset
+
+        int y1 = y
+        int y2 = y1 + inset
+        int y4 = y + cellSize
+        int y3 = y4 - inset
+
+        [x1, x2, x3, x4, y1, y2, y3, y4]
     }
 
     protected Color cellBackgroundColor(Cell cell) {
@@ -183,8 +261,8 @@ class Grid {
         ' '
     }
 
-    static void main(args){
-        def grid = new Grid(25,25)
+    static void main(args) {
+        def grid = new Grid(25, 25)
 
         Algorithms.recursiveBacktracker(grid)
 
@@ -194,6 +272,6 @@ class Grid {
 
         println "Deadends (after): ${grid.deadends().size()}"
 
-        ImageIO.write(grid.toImage(), 'png', new File("${System.getProperty('user.home')}/maze.png"))
+        ImageIO.write(grid.toImage(inset:0.1), 'png', new File("${System.getProperty('user.home')}/maze.png"))
     }
 }
