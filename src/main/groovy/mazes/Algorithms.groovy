@@ -7,7 +7,7 @@ import static mazes.Utils.randBool
 
 class Algorithms {
 
-    static binaryTree = {Grid grid->
+    static binaryTree = { Grid grid ->
         grid.eachCell { cell ->
             def neighbors = []
             if (cell.north) neighbors << cell.north
@@ -107,7 +107,7 @@ class Algorithms {
             } else {
                 current = null
 
-                for( cell in grid.cells()) {
+                for (cell in grid.cells()) {
                     def visitedNeighbors = cell.neighbors().findAll { n -> n.links() }
                     if (cell.links().isEmpty() && visitedNeighbors) {
                         current = cell
@@ -141,16 +141,78 @@ class Algorithms {
         grid
     }
 
-    static void main(args){
-        def grid = new ColoredGrid(25,25)
-        Algorithms.recursiveBacktracker(grid)
+    static kruskals = { Grid grid, State state = new State(grid) ->
+        def newList = new ArrayList(state.neighbors)
+        Collections.shuffle(newList)
 
-        def start = grid.cellAt(grid.rows /2 as int, grid.cols /2 as int)
-        grid.distances = start.distances()
+        def neighbors = newList
+
+        while (neighbors) {
+            def leftRight = neighbors.pop()
+            if (state.canMerge(leftRight[0], leftRight[1])) {
+                state.merge(leftRight[0], leftRight[1])
+            }
+        }
+
+        grid
+    }
+
+    static void main(args) {
+        def grid = new Grid(25, 25)
+//        Algorithms.recursiveBacktracker(grid)
+
+        Algorithms.kruskals(grid, new State(grid))
+
+//        def start = grid.cellAt(grid.rows / 2 as int, grid.cols / 2 as int)
+//        grid.distances = start.distances()
 
         println grid
-        println "Deadends: ${grid.deadends().size()}"
+//        println "Deadends: ${grid.deadends().size()}"
 
-        ImageIO.write(grid.toImage(), 'png', new File("${System.getProperty('user.home')}/maze.png"))
+        ImageIO.write(grid.toImage(inset:0.1), 'png', new File("${System.getProperty('user.home')}/maze.png"))
+    }
+}
+
+// part of Kruskals
+class State {
+
+    private final setForCell = [:]
+    private final cellsInSet = [:]
+
+    final neighbors = []
+
+    State(Grid grid) {
+        grid.eachCell { Cell cell ->
+            def setSize = setForCell.size()
+
+            setForCell[cell] = setSize
+            cellsInSet[setSize] = [cell]
+
+            if (cell.south) neighbors << [cell, cell.south]
+            if (cell.east) neighbors << [cell, cell.east]
+        }
+    }
+
+    boolean canMerge(left, rigth) {
+        setForCell[left] != setForCell[rigth]
+    }
+
+    void merge(Cell left, Cell right) {
+        left.link(right)
+
+        def winner = setForCell[left]
+        def loser = setForCell[right]
+        def losers = cellsInSet[loser] ?: [right]
+
+        losers.each { cell ->
+            if(cellsInSet[winner]){
+                cellsInSet[winner] << cell
+            } else {
+                cellsInSet[winner] = [cell]
+            }
+            setForCell[cell] = winner
+        }
+
+        cellsInSet.remove(loser)
     }
 }
