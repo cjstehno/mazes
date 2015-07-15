@@ -177,7 +177,7 @@ class Grid {
         [map.cellSize, map.inset]
     }
 
-    private void toImageWithoutInset(Graphics2D gfx, Cell cell, String mode, int cellSize, int x, int y) {
+    protected void toImageWithoutInset(Graphics2D gfx, Cell cell, String mode, int cellSize, int x, int y) {
         int x1 = x
         int y1 = y
         int x2 = x1 + cellSize
@@ -197,7 +197,7 @@ class Grid {
         }
     }
 
-    private void toImageWithInset(Graphics2D gfx, Cell cell, String mode, int cellSize, int x, int y, int inset) {
+    protected void toImageWithInset(Graphics2D gfx, Cell cell, String mode, int cellSize, int x, int y, int inset) {
         def (x1, x2, x3, x4, y1, y2, y3, y4) = cellCoordinatesWithInset(x, y, cellSize, inset)
 
         if (mode == 'backgrounds') {
@@ -239,7 +239,7 @@ class Grid {
         }
     }
 
-    private cellCoordinatesWithInset(int x, int y, int cellSize, int inset) {
+    protected cellCoordinatesWithInset(int x, int y, int cellSize, int inset) {
         int x1 = x
         int x2 = x1 + inset
         int x4 = x + cellSize
