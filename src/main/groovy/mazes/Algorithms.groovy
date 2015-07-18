@@ -2,8 +2,7 @@ package mazes
 
 import javax.imageio.ImageIO
 
-import static mazes.Utils.pick
-import static mazes.Utils.randBool
+import static mazes.Utils.*
 
 class Algorithms {
 
@@ -157,17 +156,55 @@ class Algorithms {
         grid
     }
 
+    static simplifiedPrims = { Grid grid, startAt = grid.randomCell() ->
+        def active = []
+        active.push(startAt)
+
+        while (active) {
+            def cell = pick(active)
+            def availableNeighbors = cell.neighbors().findAll { n -> !n.links() }
+
+            if (availableNeighbors) {
+                def neighbor = pick(availableNeighbors)
+                cell.link(neighbor)
+                active.push(neighbor)
+            } else {
+                active.remove(cell)
+            }
+        }
+
+        grid
+    }
+
+    static truePrims = { Grid grid, startAt = grid.randomCell() ->
+        def active = []
+        active.push(startAt)
+
+        def costs = [:]
+        grid.eachCell { cell ->
+            costs[cell] = randInt(100)
+        }
+
+        while (active) {
+            def cell = active.min { a, b -> costs[a] <=> costs[b] }
+            def availableNeighbors = cell.neighbors().findAll { n -> !n.links() }
+
+            if (availableNeighbors) {
+                def neighbor = availableNeighbors.min { a, b -> costs[a] <=> costs[b] }
+                cell.link(neighbor)
+                active.push(neighbor)
+            } else {
+                active.remove(cell)
+            }
+        }
+
+        grid
+    }
+
     static void main(args) {
         def grid = new Grid(25, 25)
-        //        Algorithms.recursiveBacktracker(grid)
 
-        Algorithms.kruskals(grid)
-
-        //        def start = grid.cellAt(grid.rows / 2 as int, grid.cols / 2 as int)
-        //        grid.distances = start.distances()
-
-        println grid
-        //        println "Deadends: ${grid.deadends().size()}"
+        Algorithms.truePrims(grid)
 
         ImageIO.write(grid.toImage(inset: 0.1), 'png', new File("${System.getProperty('user.home')}/maze.png"))
     }
