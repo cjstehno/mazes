@@ -141,7 +141,7 @@ class Algorithms {
         grid
     }
 
-    static kruskals = { Grid grid, State state = new State(grid) ->
+    static kruskals = { Grid grid, KruskalsSate state = new KruskalsSate(grid) ->
         def newList = new ArrayList(state.neighbors)
         Collections.shuffle(newList)
 
@@ -159,29 +159,31 @@ class Algorithms {
 
     static void main(args) {
         def grid = new Grid(25, 25)
-//        Algorithms.recursiveBacktracker(grid)
+        //        Algorithms.recursiveBacktracker(grid)
 
-        Algorithms.kruskals(grid, new State(grid))
+        Algorithms.kruskals(grid)
 
-//        def start = grid.cellAt(grid.rows / 2 as int, grid.cols / 2 as int)
-//        grid.distances = start.distances()
+        //        def start = grid.cellAt(grid.rows / 2 as int, grid.cols / 2 as int)
+        //        grid.distances = start.distances()
 
         println grid
-//        println "Deadends: ${grid.deadends().size()}"
+        //        println "Deadends: ${grid.deadends().size()}"
 
-        ImageIO.write(grid.toImage(inset:0.1), 'png', new File("${System.getProperty('user.home')}/maze.png"))
+        ImageIO.write(grid.toImage(inset: 0.1), 'png', new File("${System.getProperty('user.home')}/maze.png"))
     }
 }
 
-// part of Kruskals
-class State {
-
-    private final setForCell = [:]
-    private final cellsInSet = [:]
+class KruskalsSate {
 
     final neighbors = []
 
-    State(Grid grid) {
+    private final Grid grid
+    private final setForCell = [:]
+    private final cellsInSet = [:]
+
+    KruskalsSate(Grid grid) {
+        this.grid = grid
+
         grid.eachCell { Cell cell ->
             def setSize = setForCell.size()
 
@@ -202,10 +204,10 @@ class State {
 
         def winner = setForCell[left]
         def loser = setForCell[right]
-        def losers = cellsInSet[loser] ?: [right]
+        def losers = new ArrayList<>(cellsInSet[loser] ?: [right])
 
         losers.each { cell ->
-            if(cellsInSet[winner]){
+            if (cellsInSet[winner]) {
                 cellsInSet[winner] << cell
             } else {
                 cellsInSet[winner] = [cell]
@@ -214,5 +216,32 @@ class State {
         }
 
         cellsInSet.remove(loser)
+    }
+
+    boolean addCrossing(Cell cell) {
+        if (cell.links() || !canMerge(cell.east, cell.west) || !canMerge(cell.north, cell.south)) {
+            return false
+        }
+
+        neighbors.removeAll { n -> n[0] == cell || n[1] == cell }
+
+        if (Utils.randBool()) {
+            merge(cell.west, cell)
+            merge(cell, cell.east)
+
+            grid.tunnelUnder(cell)
+            merge(cell.north, cell.north.south)
+            merge(cell.south, cell.south.north)
+
+        } else {
+            merge(cell.north, cell)
+            merge(cell, cell.south)
+
+            grid.tunnelUnder(cell)
+            merge(cell.west, cell.west.east)
+            merge(cell.east, cell.east.west)
+        }
+
+        true
     }
 }
