@@ -201,12 +201,32 @@ class Algorithms {
         grid
     }
 
+    static growingTree = { Grid grid, startAt = grid.randomCell(), Closure closure ->
+        def active = []
+        active.push(startAt)
+
+        while (active) {
+            def cell = closure(active)
+            def availableNeighbors = cell.neighbors().findAll { n -> !n.links() }
+
+            if (availableNeighbors) {
+                def neighbor = pick(availableNeighbors)
+                cell.link(neighbor)
+                active.push(neighbor)
+            } else {
+                active.remove(cell)
+            }
+        }
+
+        grid
+    }
+
     static void main(args) {
         def grid = new Grid(25, 25)
 
-        Algorithms.truePrims(grid)
+        Algorithms.growingTree(grid) { list -> randBool() ? list.last() : pick(list) }
 
-        ImageIO.write(grid.toImage(inset: 0.1), 'png', new File("${System.getProperty('user.home')}/maze.png"))
+        ImageIO.write(grid.toImage(), 'png', new File("${System.getProperty('user.home')}/maze.png"))
     }
 }
 
