@@ -221,10 +221,47 @@ class Algorithms {
         grid
     }
 
+    // FIXME: this one has issues - something in the porting from Ruby to Groovy
+    static ellers = { Grid grid ->
+        def rowState = new EllersRowState()
+
+        grid.eachRow { row ->
+            row.each { cell ->
+                if (!cell.west) {
+                    return
+                }
+
+                def set = rowState.setFor(cell)
+                def priorSet = rowState.setFor(cell.west)
+
+                boolean shouldLink = set != priorSet && (!cell.south || randBool())
+                if (shouldLink) {
+                    cell.link(cell.west)
+                    rowState.merge(priorSet, set)
+                }
+
+                if (row[0].south) {
+                    def nextRow = rowState.next()
+
+                    rowState.eachSet { rset, list ->
+                        Collections.shuffle(list)
+                        list.eachWithIndex { rcell, index ->
+                            if (rcell?.south && (index == 0 || randInt(3) == 0)) {
+                                rcell.link(rcell.south)
+                                nextRow.record(rowState.setFor(rcell), rcell.south)
+                            }
+                        }
+                    }
+                    rowState = nextRow
+                }
+            }
+        }
+    }
+
     static void main(args) {
         def grid = new Grid(25, 25)
 
-        Algorithms.growingTree(grid) { list -> randBool() ? list.last() : pick(list) }
+        Algorithms.ellers(grid)
 
         ImageIO.write(grid.toImage(), 'png', new File("${System.getProperty('user.home')}/maze.png"))
     }
@@ -300,5 +337,50 @@ class KruskalsSate {
         }
 
         true
+    }
+}
+
+class EllersRowState {
+
+    private final cellsInSet = [:]
+    private final setForCell = []
+    private int nextSet
+
+    EllersRowState(startingSet = 0) {
+        nextSet = startingSet
+    }
+
+    def record(set, cell) {
+        setForCell[cell.col] = set
+        if (!cellsInSet[set]) cellsInSet[set] = []
+        cellsInSet[set].push(cell)
+    }
+
+    def setFor(cell) {
+        if (!setForCell[cell.col]) {
+            record(nextSet, cell)
+            nextSet += 1
+        }
+        setForCell[cell.col]
+    }
+
+    def merge(winner, loser) {
+        cellsInSet[loser].each { cell ->
+            setForCell[cell.col] = winner
+            cellsInSet[winner].push(cell)
+        }
+
+        cellsInSet.remove(loser)
+    }
+
+    def next() {
+        new EllersRowState(nextSet)
+    }
+
+    def eachSet(Closure closure) {
+        cellsInSet.each { set, cells ->
+            closure(set, cells)
+        }
+        this
     }
 }
