@@ -34,3 +34,16 @@ As an extra twist on this project, I am going to refactor it into a Spring Boot 
 * Shortest/longest path visualization
 
 * No wave or masking support - that seems a bit more cumbersome for this little fun project.
+
+
+## Building
+
+> TBD...
+
+## Running
+
+> TBD...
+
+## Deploying (Heroku)
+
+> TBD...

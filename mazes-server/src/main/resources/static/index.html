@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mazes!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+
+    <style type="text/css">
+        body {
+            padding-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/"><strong>Mazes</strong></a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="main-navbar">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" target="_blank" data-toggle="modal" data-target="#about-dialog"><span class="glyphicon glyphicon-question-sign"></span> About</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-6">
+
+            <div class="panel panel-info">
+                <div class="panel-body">
+                    <p>Change the options in the form below and click the "Generate!" button to create a new randomly-generated
+                    maze image based on your criteria.</p>
+                </div>
+            </div>
+
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="rows" class="col-sm-2 control-label">Rows</label>
+                    <div class="col-sm-10">
+                        <input type="number" min="6" max="100" class="form-control input-sm" id="rows" value="10" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="cols" class="col-sm-2 control-label">Columns</label>
+                    <div class="col-sm-10">
+                        <input type="number" min="6" max="100" class="form-control input-sm" id="cols" value="10" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="braiding" class="col-sm-2 control-label">Braiding</label>
+                    <div class="col-sm-10">
+                        <input type="number" min="0" max="10" class="form-control input-sm" id="braiding" value="0" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="algorithm" class="col-sm-2 control-label">Algorithm</label>
+                    <div class="col-sm-10">
+                        <select id="algorithm" class="form-control input-sm">
+                            <option value="BINARY_TREE">Binary Tree</option>
+                            <option value="SIDEWINDER">Sidewinder</option>
+                            <option value="ALDOUS_BRODER">Aldous Broder</option>
+                            <option value="WILSONS">Wilsons</option>
+                            <option value="HUNT_AND_KILL">Hunt and Kill</option>
+                            <option value="RECURSIVE_BACTRACKER">Recursive Backtracker</option>
+                            <option value="KRUSKALS">Kruskals</option>
+                            <option value="SIMPLIFIED_PRIMS">Simplified Prims</option>
+                            <option value="TRUE_PRIMS">True Prims</option>
+                            <option value="RECURSIVE_DIVISION">Recursive Division</option>
+                            <option value="RECURSIVE_DIVISION_WITH_ROOMS">Recursive Division (with rooms)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="visualization" class="col-sm-2 control-label">Visualization</label>
+                    <div class="col-sm-10">
+                        <select id="visualization" class="form-control input-sm">
+                            <option value="NONE">None</option>
+                            <option value="FLOODING">Flooding</option>
+                            <option value="SHORTEST_PATH">Shortest Path</option>
+                            <option value="LONGEST_PATH">Longest Path</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-sm pull-right">Generate!</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+
+        <div class="col-md-6">
+            <a href="#" class="thumbnail">
+                <img src="https://crossingkidcity.files.wordpress.com/2012/11/hard.png" />
+            </a>
+        </div>
+    </div>
+</div>
+
+<div id="about-dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel"><span class="glyphicon glyphicon-question-sign"></span> About</h4>
+            </div>
+            <div class="modal-body">
+                <p>This Spring-Boot application was created after working through the examples in the
+                    "<a href="https://pragprog.com/book/jbmaze/mazes-for-programmers">Mazes For Programmers</a>" by Jamis Buck. While reading the book,
+                    I ported the code from Ruby over to Groovy, and when I finished I thought it would be interesting to create a little maze server
+                    using the techniques learned from the book.
+                </p>
+                <p>This application (and the ported code from the book) are available on my <a href="https://github.com/cjstehno/mazes">mazes</a>
+                GitHub project.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/libs/jquery-2.1.4.min.js"></script>
+<script src="js/libs/bootstrap.min.js"></script>
+<script src="js/libs/underscore.min.js" type="text/javascript"></script>
+<script src="js/mazes.js" type="text/javascript"></script>
+
+</body>
+</html>
