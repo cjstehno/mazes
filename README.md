@@ -6,3 +6,31 @@ from the book to Groovy.
 
 Note: this is not intended to be an official port of the code from the book. I am making my own changes as I see fit. If you are reading the book and
 want the Groovy version of the code, you can at least have this as a general reference.
+
+## Maze Server
+
+As an extra twist on this project, I am going to refactor it into a Spring Boot project providing a sub-set of the mazes as an online maze generator.
+
+### Supports
+
+* Quadrilateral mazes only
+* Allow download of the generated image
+* Selection of row/column count (within bounds)
+* Algorithm selection
+    * binaryTree
+    * sidewinder
+    * aldousBroder
+    * wilsons
+    * huntAndKill
+    * recursiveBacktracker
+    * kruskals
+    * simplifiedPrims
+    * truePrims
+    * recursiveDivision
+        * with(out) rooms
+* The insets will be hard-coded per algorithm to give the best views
+* Braiding on mazes that will allow it
+* Flooding to show paths
+* Shortest/longest path visualization
+
+* No wave or masking support - that seems a bit more cumbersome for this little fun project.

@@ -1,0 +1,53 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.2.5.RELEASE'
+    }
+}
+
+apply plugin: 'war'
+apply plugin: 'groovy'
+apply plugin: 'spring-boot'
+
+sourceCompatibility = 8
+targetCompatibility = 8
+
+mainClassName = 'com.stehno.mazes.MazeServer'
+
+repositories {
+    jcenter()
+}
+
+configurations {
+    providedRuntime
+}
+
+dependencies {
+    compile project(':mazes-core')
+
+    compile "org.codehaus.groovy:groovy-all:2.4.4"
+
+    // spring-managed dependencies
+
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    compile 'org.springframework.boot:spring-boot-starter-logging'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'com.fasterxml.jackson.core:jackson-databind'
+    compile 'org.hibernate:hibernate-validator'
+    compile 'io.dropwizard.metrics:metrics-core:'
+    compile 'org.aspectj:aspectjweaver'
+
+    // test dependencies
+
+    testCompile 'junit:junit'
+    testCompile 'org.spockframework:spock-core'
+    testCompile 'org.spockframework:spock-spring'
+    testCompile 'com.jayway.jsonpath:json-path'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
+
+war {
+    baseName = 'mazes'
+}
