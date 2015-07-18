@@ -258,10 +258,59 @@ class Algorithms {
         }
     }
 
+    static recursiveDivision = { Grid grid ->
+        grid.eachCell { cell ->
+            cell.neighbors().each { n -> cell.link(n, false) }
+        }
+
+        divide(grid, 0, 0, grid.rows, grid.cols)
+    }
+
+    static divide(Grid grid, int row, int col, int height, int width) {
+                                      // this is the part that adds the rooms
+        if (height <= 1 || width <= 1 || height < 5 && width < 5 && randInt(4) == 0) return
+
+        if (height > width) {
+            divideHorizontally(grid, row, col, height, width)
+        } else {
+            divideVertically(grid, row, col, height, width)
+        }
+    }
+
+    static divideHorizontally(Grid grid, int row, int col, int height, int width) {
+        def divideSouthOf = randInt(height - 1)
+        def passageAt = randInt(width)
+
+        width.times { x ->
+            if (passageAt == x) return
+
+            def cell = grid.cellAt(row + divideSouthOf, col + x)
+            cell.unlink(cell.south)
+        }
+
+        divide(grid, row, col, divideSouthOf + 1, width)
+        divide(grid, row + divideSouthOf + 1, col, height - divideSouthOf - 1, width)
+    }
+
+    static divideVertically(Grid grid, int row, int col, int height, int width) {
+        def divideEastOf = randInt(width - 1)
+        def passageAt = randInt(height)
+
+        height.times { y ->
+            if (passageAt == y) return
+
+            def cell = grid.cellAt(row + y, col + divideEastOf)
+            cell.unlink(cell.east)
+        }
+
+        divide(grid, row, col, height, divideEastOf + 1)
+        divide(grid, row, col + divideEastOf + 1, height, width - divideEastOf - 1)
+    }
+
     static void main(args) {
         def grid = new Grid(25, 25)
 
-        Algorithms.ellers(grid)
+        Algorithms.recursiveDivision(grid)
 
         ImageIO.write(grid.toImage(), 'png', new File("${System.getProperty('user.home')}/maze.png"))
     }
