@@ -38,6 +38,8 @@ As an extra twist on this project, I am going to refactor it into a Spring Boot 
 
 * No wave or masking support - that seems a bit more cumbersome for this little fun project.
 
+![Screenshot](screenshot.png)
+
 
 ## Building
 
