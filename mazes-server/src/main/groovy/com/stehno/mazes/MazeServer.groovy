@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @EnableAutoConfiguration
-@ComponentScan(['com.stehno.mazes.controller'])
+@ComponentScan(['com.stehno.mazes.controller', 'com.stehno.mazes.repository'])
 class MazeServer {
 
     static void main(final String[] args) {

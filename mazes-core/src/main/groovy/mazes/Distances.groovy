@@ -1,5 +1,7 @@
 package mazes
 
+import com.stehno.mazes.Cell
+
 class Distances {
 
     private final Cell root

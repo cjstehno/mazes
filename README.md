@@ -7,6 +7,9 @@ from the book to Groovy.
 Note: this is not intended to be an official port of the code from the book. I am making my own changes as I see fit. If you are reading the book and
 want the Groovy version of the code, you can at least have this as a general reference.
 
+> Note: the current code is a very trimmed-down and refactored version of the ported Ruby code. If you want a more complete porting, closer to the 
+original Ruby code, see the "[book](https://github.com/cjstehno/mazes/releases/tag/book)" tag.
+
 ## Maze Server
 
 As an extra twist on this project, I am going to refactor it into a Spring Boot project providing a sub-set of the mazes as an online maze generator.

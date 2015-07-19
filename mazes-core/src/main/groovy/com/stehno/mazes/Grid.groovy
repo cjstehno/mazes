@@ -1,12 +1,11 @@
-package mazes
+package com.stehno.mazes
 
-import javax.imageio.ImageIO
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.util.List
 
+import static com.stehno.mazes.RandomUtils.*
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB
-import static mazes.Utils.*
 
 class Grid {
 
@@ -104,7 +103,7 @@ class Grid {
                 def best = neighbors.findAll { Cell n -> n.links().size() == 1 }
                 best = best ?: neighbors
 
-                cell.link(pick(best))
+                cell.link(rand(best))
             }
         }
     }
@@ -259,19 +258,5 @@ class Grid {
 
     protected String contentsOf(Cell cell) {
         ' '
-    }
-
-    static void main(args) {
-        def grid = new Grid(25, 25)
-
-        Algorithms.recursiveBacktracker(grid)
-
-        println "Deadends (before): ${grid.deadends().size()}"
-
-        grid.braid(0.5f)
-
-        println "Deadends (after): ${grid.deadends().size()}"
-
-        ImageIO.write(grid.toImage(inset:0.1), 'png', new File("${System.getProperty('user.home')}/maze.png"))
     }
 }

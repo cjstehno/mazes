@@ -7,6 +7,7 @@ function generateClicked(evt){
     var mazeRequest = {};
     mazeRequest.rows = parseInt($('#rows').val());
     mazeRequest.cols = parseInt($('#cols').val());
+    mazeRequest.passageWidth = parseInt($('#passageWidth').val());
     mazeRequest.braiding = parseInt($('#braiding').val());
     mazeRequest.algorithm = $('#algorithm').val();
     mazeRequest.visualization = $('#visualization').val();

@@ -1,8 +1,12 @@
 package mazes
 
+import com.stehno.mazes.Cell
+import com.stehno.mazes.Grid
+import com.stehno.mazes.RandomUtils
+
 import javax.imageio.ImageIO
 
-import static mazes.Utils.*
+import static com.stehno.mazes.RandomUtils.*
 
 class Algorithms {
 
@@ -12,7 +16,7 @@ class Algorithms {
             if (cell.north) neighbors << cell.north
             if (cell.east) neighbors << cell.east
 
-            def neighbor = pick(neighbors)
+            def neighbor = rand(neighbors)
             if (neighbor) cell.link(neighbor)
         }
 
@@ -32,7 +36,7 @@ class Algorithms {
                 boolean shouldCloseOut = atEastBounds || (!atNorthBounds && randBool())
 
                 if (shouldCloseOut) {
-                    def member = pick(run)
+                    def member = rand(run)
                     if (member.north) member.link(member.north)
 
                     run.clear()
@@ -51,7 +55,7 @@ class Algorithms {
         int unvisited = grid.size() - 1
 
         while (unvisited) {
-            Cell neighbor = pick(cell.neighbors())
+            Cell neighbor = rand(cell.neighbors())
             if (neighbor.links().isEmpty()) {
                 cell.link(neighbor)
                 unvisited--
@@ -67,15 +71,15 @@ class Algorithms {
         def unvisited = []
         grid.eachCell { cell -> unvisited << cell }
 
-        def first = pick(unvisited)
+        def first = rand(unvisited)
         unvisited.remove(first)
 
         while (unvisited) {
-            Cell cell = pick(unvisited)
+            Cell cell = rand(unvisited)
             def path = [cell]
 
             while (unvisited.contains(cell)) {
-                cell = pick(cell.neighbors())
+                cell = rand(cell.neighbors())
                 def position = path.indexOf(cell)
                 if (position > 0) {
                     path = path[0..position]
@@ -99,7 +103,7 @@ class Algorithms {
         while (current) {
             def unvisitedNeighbors = current.neighbors().findAll { n -> n.links().isEmpty() }
             if (unvisitedNeighbors) {
-                def neighbor = pick(unvisitedNeighbors)
+                def neighbor = rand(unvisitedNeighbors)
                 current.link(neighbor)
                 current = neighbor
 
@@ -110,7 +114,7 @@ class Algorithms {
                     def visitedNeighbors = cell.neighbors().findAll { n -> n.links() }
                     if (cell.links().isEmpty() && visitedNeighbors) {
                         current = cell
-                        current.link(pick(visitedNeighbors))
+                        current.link(rand(visitedNeighbors))
                         break
                     }
                 }
@@ -131,7 +135,7 @@ class Algorithms {
                 stack.pop()
 
             } else {
-                def neighbor = pick(neighbors)
+                def neighbor = rand(neighbors)
                 current.link(neighbor)
                 stack.push neighbor
             }
@@ -161,11 +165,11 @@ class Algorithms {
         active.push(startAt)
 
         while (active) {
-            def cell = pick(active)
+            def cell = rand(active)
             def availableNeighbors = cell.neighbors().findAll { n -> !n.links() }
 
             if (availableNeighbors) {
-                def neighbor = pick(availableNeighbors)
+                def neighbor = rand(availableNeighbors)
                 cell.link(neighbor)
                 active.push(neighbor)
             } else {
@@ -210,7 +214,7 @@ class Algorithms {
             def availableNeighbors = cell.neighbors().findAll { n -> !n.links() }
 
             if (availableNeighbors) {
-                def neighbor = pick(availableNeighbors)
+                def neighbor = rand(availableNeighbors)
                 cell.link(neighbor)
                 active.push(neighbor)
             } else {
@@ -219,43 +223,6 @@ class Algorithms {
         }
 
         grid
-    }
-
-    // FIXME: this one has issues - something in the porting from Ruby to Groovy
-    static ellers = { Grid grid ->
-        def rowState = new EllersRowState()
-
-        grid.eachRow { row ->
-            row.each { cell ->
-                if (!cell.west) {
-                    return
-                }
-
-                def set = rowState.setFor(cell)
-                def priorSet = rowState.setFor(cell.west)
-
-                boolean shouldLink = set != priorSet && (!cell.south || randBool())
-                if (shouldLink) {
-                    cell.link(cell.west)
-                    rowState.merge(priorSet, set)
-                }
-
-                if (row[0].south) {
-                    def nextRow = rowState.next()
-
-                    rowState.eachSet { rset, list ->
-                        Collections.shuffle(list)
-                        list.eachWithIndex { rcell, index ->
-                            if (rcell?.south && (index == 0 || randInt(3) == 0)) {
-                                rcell.link(rcell.south)
-                                nextRow.record(rowState.setFor(rcell), rcell.south)
-                            }
-                        }
-                    }
-                    rowState = nextRow
-                }
-            }
-        }
     }
 
     static recursiveDivision = { Grid grid ->
@@ -368,7 +335,7 @@ class KruskalsSate {
 
         neighbors.removeAll { n -> n[0] == cell || n[1] == cell }
 
-        if (Utils.randBool()) {
+        if (RandomUtils.randBool()) {
             merge(cell.west, cell)
             merge(cell, cell.east)
 
@@ -386,50 +353,5 @@ class KruskalsSate {
         }
 
         true
-    }
-}
-
-class EllersRowState {
-
-    private final cellsInSet = [:]
-    private final setForCell = []
-    private int nextSet
-
-    EllersRowState(startingSet = 0) {
-        nextSet = startingSet
-    }
-
-    def record(set, cell) {
-        setForCell[cell.col] = set
-        if (!cellsInSet[set]) cellsInSet[set] = []
-        cellsInSet[set].push(cell)
-    }
-
-    def setFor(cell) {
-        if (!setForCell[cell.col]) {
-            record(nextSet, cell)
-            nextSet += 1
-        }
-        setForCell[cell.col]
-    }
-
-    def merge(winner, loser) {
-        cellsInSet[loser].each { cell ->
-            setForCell[cell.col] = winner
-            cellsInSet[winner].push(cell)
-        }
-
-        cellsInSet.remove(loser)
-    }
-
-    def next() {
-        new EllersRowState(nextSet)
-    }
-
-    def eachSet(Closure closure) {
-        cellsInSet.each { set, cells ->
-            closure(set, cells)
-        }
-        this
     }
 }

@@ -1,7 +1,8 @@
-package mazes
+package com.stehno.mazes
 
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
+import mazes.Distances
 
 @EqualsAndHashCode(includes = ['row', 'col'])
 @ToString(includes = ['row', 'col'])

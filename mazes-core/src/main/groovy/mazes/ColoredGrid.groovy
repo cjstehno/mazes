@@ -1,5 +1,8 @@
 package mazes
 
+import com.stehno.mazes.Cell
+import com.stehno.mazes.Grid
+
 import java.awt.Color
 
 class ColoredGrid extends Grid {
