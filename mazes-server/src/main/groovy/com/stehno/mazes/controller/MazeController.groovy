@@ -21,9 +21,11 @@ class MazeController {
     }
 
     @RequestMapping(value = 'image', method = GET)
-    OutputStream image() {
+    byte[] image() {
         // since the storage is a single session based image, this just shows teh image in session
         // The insets will be hard-coded per algorithm to give the best views
+        //
+        new URL('https://crossingkidcity.files.wordpress.com/2012/11/hard.png').bytes
     }
 }
 
